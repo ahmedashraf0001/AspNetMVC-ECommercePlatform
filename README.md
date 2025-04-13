@@ -3,7 +3,7 @@
 A modern, feature-rich E-Commerce web application built using **ASP.NET MVC**, **Entity Framework**, and a **Layered Architecture**. It provides a clean, animated UI for customers to browse and shop, and a powerful admin panel for managing the entire system.
 
 ---
-![Admin Dashboard](./assets/home.png)
+![Home](./assets/home.png)
 ---
 
 ## 🌐 Features
@@ -16,6 +16,9 @@ A modern, feature-rich E-Commerce web application built using **ASP.NET MVC**, *
 - **Search, Sort & Pagination** on the Shop page
 - **AJAX & jQuery** support for dynamic content
 - **Client-side & Server-side Input Validation**
+  
+---
+![Admin Dashboard](./assets/adminpanal.png)
 ---
 
 ### 🔐 Admin Panel  
