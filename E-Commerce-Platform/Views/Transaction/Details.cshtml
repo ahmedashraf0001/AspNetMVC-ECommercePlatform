@@ -1,0 +1,113 @@
+﻿@model Transactions
+
+@{
+    ViewData["Title"] = "Transaction Details";
+
+}
+
+<h2 class="mb-4 text-primary">Transaction Details</h2>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<div class="card shadow-lg border-0">
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">Transaction ID: @Model.Id</h4>
+    </div>
+    <div class="card-body">
+        <div class="row row-cols-2 g-3">
+            <div class="col border-bottom pb-2">
+                <strong class="text-muted">User:</strong> <span class="fw-bold ms-2">@Model.User.FullName</span>
+            </div>
+            <div class="col border-bottom pb-2">
+                <strong class="text-muted">Order ID:</strong> <span class="fw-bold ms-2">@Model.OrderId </span>
+            </div>
+            <div class="col border-bottom pb-2">
+                <strong class="text-muted">Total Cost:</strong> <span class="fw-bold ms-2 text-success">$@Model.TotalCost</span>
+            </div>
+            <div class="col border-bottom pb-2 d-flex align-items-center">
+                <strong class="text-muted">Payment Method:</strong>
+                <i class="@GetPaymentIcon(Model.paymentMethod) ms-2 fs-5"></i>
+                <span class="fw-bold ms-2">@Model.paymentMethod</span>
+            </div>
+            <div class="col border-bottom pb-2">
+                <strong class="text-muted">Transaction Date:</strong>
+                <span class="fw-bold ms-2">@Model.TransactionDate.ToString("yyyy-MM-dd HH:mm")</span>
+            </div>
+            <div class="col border-bottom pb-2">
+                <strong class="text-muted">Status:</strong>
+                <span class="badge @(GetStatusClass(Model.transactionStatus)) ms-2 p-2">@Model.transactionStatus</span>
+            </div>
+        </div>
+
+        <h4 class="mt-4">Products in Order</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover shadow-sm rounded">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Order.OrderDetails.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-3">
+                                <span class="text-muted">No Products Found</span>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.Order.OrderDetails)
+                        {
+                            <tr class="align-middle text-center clickable-row" data-url="@Url.Action("Details", "Order", new { orderId = item.Id })">
+                                <td>
+                                    <img src="@item.Product.ImageUrl" class="rounded shadow-sm" style="width:50px; height:50px; object-fit:cover;">
+                                </td>
+                                <td class="fw-bold">@item.Product.Name</td>
+                                <td>@item.Quantity</td>
+                                <td class="text-success fw-bold">$@item.Product.Price</td>
+                                <td class="text-danger fw-bold">$@((item.Quantity * item.Product.Price).ToString("N0"))</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 d-flex gap-3">
+            <a href="@Url.Action("Index", "Transaction")" class="btn btn-secondary px-4">Back to Transactions</a>
+            @if (Model.transactionStatus == TransStatus.Completed)
+            {
+                <a href="@Url.Action("Refund", "Transaction", new { transId = Model.Id })" class="btn btn-danger px-4">Issue Refund</a>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusClass(TransStatus status)
+    {
+        return status switch
+        {
+            TransStatus.Completed => "bg-success",
+            TransStatus.Refunded => "bg-dark",
+            TransStatus.Pending => "bg-warning",
+            TransStatus.Chargeback => "bg-primary",
+            TransStatus.Failed => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+    string GetPaymentIcon(PaymentMethod method)
+    {
+        return method switch
+        {
+            PaymentMethod.CreditCard => "fa-solid fa-credit-card text-primary", 
+            PaymentMethod.DebitCard => "fa-solid fa-credit-card text-info",
+            _ => "fa-solid fa-question-circle text-secondary"
+        };
+    }
+}

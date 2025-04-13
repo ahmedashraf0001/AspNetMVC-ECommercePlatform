@@ -1,0 +1,24 @@
+﻿@using E_Commerce_Platform.ViewModels
+@model CustomErrorViewModel
+@{
+    Layout = null;
+    ViewBag.Title = "Error";
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="~/css/index.css" />
+
+<div class="d-flex flex-column align-items-center justify-content-center vh-100 text-center gap-3">
+    <span class="text-red block lineheight fs-400 bold-700 fs-poppins">An Error Occurred</span>
+    <span id="bigtext" class="text-gray fs-montserrat bold-600 fs-100" style="color: gray;">
+        @Model.Message
+    </span>
+
+    @if (!string.IsNullOrEmpty(Model.Details))
+    {
+        <div class="alert alert-warning w-50">
+            <strong>Details:</strong> @Model.Details
+        </div>
+    }
+
+    <a href="@Url.Action("Home", "Ecommerce")" class="btn btn-danger mt-3 px-4 py-2">Return Home</a>
+</div>

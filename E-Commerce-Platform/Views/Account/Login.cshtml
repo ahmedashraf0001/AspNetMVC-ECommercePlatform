@@ -1,0 +1,67 @@
+﻿@model E_Commerce_Platform.ViewModels.LoginViewModel
+
+@{
+    Layout = "~/Views/Shared/_websiteLayout.cshtml";
+}
+<link rel="stylesheet" href="~/css/login.css" />
+<body>
+    <div class="login-container">
+        <div class="login" data-aos="fade-up">
+            <div class="left-side">
+                <img src="~/images/p11.png" alt="">
+            </div>
+            <div class="right-side">
+                <div class="header">
+                    <div class="logo-title">
+                        <div class="logo">
+                            <img src="~/images/logo.png" alt="">
+                        </div>
+                        <div class="titles">
+                            <div class="title-2 big-wireless block fs-400 bold-700 fs-poppins">Welcome Back</div>
+                            <div style="color: gray;" class="title-2 big-wireless block fs-100 bold-400 fs-poppins">Please login to your account</div>
+                        </div>
+                    </div>
+                    <form asp-action="Login" asp-controller="Account" method="post" data-aos="fade-up" style="width:85%">
+                        <div asp-validation-summary="ModelOnly" style="color: red;" class="fs-100 bold-500 fs-poppins"></div>
+                        <input asp-for="Email" style="color: gray;" class="fs-100 bold-500 fs-poppins" type="text" placeholder="Email address">
+                        <span class="fs-100 bold-500 fs-poppins" asp-validation-for="Email" style="color:red;"></span>
+
+                        <input asp-for="Password" style="color: gray;" class="fs-100 bold-500 fs-poppins" type="password" placeholder="Password">
+                        <span class="fs-100 bold-500 fs-poppins" asp-validation-for="Password" style="color:red;"></span>
+
+                        <div class="row-container" style="display:flex; justify-content:space-between; align-items:center">
+                            <div class="rememberme">
+                                <input asp-for="RememberMe" type="checkbox">
+                                <label asp-for="RememberMe" style="color: gray;" class="fs-100 bold-500 fs-poppins">Remember me</label>
+                            </div>
+                            <div class="forgetpassword">
+                                <a asp-controller="Account" asp-action="ForgotPassword" style="color: gray;" class="fs-100 bold-500 fs-poppins">Forgot Password?</a>
+                            </div>
+                        </div>
+                        <button type="submit" class="large-btn bg-red text-white fs-poppins fs-50">Submit!</button>
+                    </form>
+                    <span style="color: gray;" class="title-2 big-wireless block fs-100 bold-500 fs-poppins">Or Log In With</span>
+                    
+                    <div class="login-options">
+                        <form asp-controller="Account" asp-action="ExternalLogin" method="post">
+                        <button name="provider" value="Google" class="google-btn">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google">
+                            <span class="title-2 big-wireless block fs-100 bold-700 fs-poppins">Google</span>
+                        </button>
+                        </form>
+                        <form asp-controller="Account" asp-action="ExternalLogin" method="post">
+                            <button name="provider" value="Facebook" class="facebook-btn">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="Facebook">
+                            <span class="title-2 big-wireless block fs-100 bold-700 fs-poppins">Facebook</span>
+                        </button>
+						</form>
+                    </div>
+                    <div style="color: gray; font-size: 12px;" class="title-2 big-wireless block bold-600 fs-poppins">Don't have an account? <span><a asp-controller="Account" asp-action="Register" class="text-red">Register</a></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

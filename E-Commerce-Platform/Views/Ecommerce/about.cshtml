@@ -1,0 +1,48 @@
+﻿@{
+    Layout = "~/Views/Shared/_websiteLayout.cshtml";
+}
+<link rel="stylesheet" href="~/css/shop.css" />
+<link rel="stylesheet" href="~/css/about.css" />
+
+<body>
+    <div class="main-container">
+        <div class="aboutus">
+            <div class="header">
+                <span id="bigtext" class="text-gray fs-montserrat bold-600 fs-100">Home > About Us</span>
+                <span class="big-wireless block lineheight fs-400 bold-700 fs-poppins">About Us</span>
+            </div>
+            <div class="aboutus-container">
+                <div class="aboutus-text" data-aos="fade-up">
+                    <div>
+                        <div class="title-1 text-red lineheight fs-100 bold-500 fs-poppins" style="margin-bottom: 10px;">
+                            Welcome to Phlox
+                        </div>
+                        <div class="title-2 big-wireless block lineheight fs-400 bold-700 fs-poppins">
+                            Who Am I?
+                        </div>
+                    </div>
+                    <div style="color:gray" class="title-3 fs-100 bold-500 fs-poppins">
+                        I'm a passionate computer science student dedicated to building innovative and efficient solutions.
+                        This project is a reflection of my commitment to learning and developing real-world applications.
+                        My goal is to create high-quality software that enhances user experiences while improving
+                        my technical skills along the way.
+                        <br /><br />
+                        Through this journey, I have explored various technologies, tackled complex challenges, and refined
+                        my problem-solving abilities. I believe that continuous learning and hands-on experience are
+                        the keys to growth in the tech world.
+                        <br /><br />
+                        Thank you for visiting! Feel free to reach out if you have any questions or collaboration ideas.
+                    </div>
+                    <a class="no-style" asp-action="Contact" asp-controller="Ecommerce">
+                        <button class="large-btn bg-red text-white fs-poppins fs-50" data-aos="fade-up">
+                            Contact Me
+                        </button>
+                    </a>
+                </div>
+                <div class="aboutus-img" data-aos="fade-up">
+                    <img src="~/images/about-us.png" alt="About Me">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

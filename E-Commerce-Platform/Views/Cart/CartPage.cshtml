@@ -1,0 +1,81 @@
+﻿@using E_Commerce_Platform.ViewModels
+@model CartSummaryViewModel
+@{
+    Layout = "~/Views/Shared/_websiteLayout.cshtml";
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="~/css/index.css" />
+<link rel="stylesheet" href="~/css/cart.css" />
+<script src="~/js/cart.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+
+<body>
+    <div class="cart-container">
+        <div class="card">
+            <div class="shopping-container">
+                <div class="left-side">
+                    <div class="title">
+                        <div class="col  text-black fs-100 bold-400 fs-poppins"><h4><b>Shopping Cart</b></h4></div>
+                        <div class="col align-self-center text-right text-muted">3 items</div>
+                    </div>
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @TempData["ErrorMessage"]
+                        </div>
+                    }
+                    <div class="shopping-item-card-container">
+                        @if (Model.Products.Count == 0)
+                        {
+                            <div style="align-self:center; font-size:25px; transform:translateY(100%)" class="title-3 text-black fs-100 bold-700 fs-poppins">Cart Is Empty</div>
+
+                        }
+                        @foreach (var product in Model.Products)
+                        {
+                            <div class="shopping-item-card row main align-items-center border-top border-bottom" data-product-id="@product.ProductId">
+                                <div class="col-2"><img class="img-fluid" src="@product.ProductImage"></div>
+                                <div class="col">
+                                    <div class="title-3 text-black fs-100 bold-400 fs-poppins">@product.ProductName</div>
+                                    <div id="desc-text" class="title-3 text-black fs-100 bold-700 fs-poppins">@product.ProductDescription</div>
+                                </div>
+                                <div class="quaitity-counter col">
+                                    <a class="no-style text-black fs-100 bold-700 fs-poppins minus" href="#">-</a>
+                                    <a class="no-style border text-black fs-100 bold-700 fs-poppins quantity" style="padding: 0px 10px; margin: 5px;" href="#">@product.Quantity</a>
+                                    <a class="no-style text-black fs-100 bold-700 fs-poppins plus" href="#">+</a>
+                                </div>
+                                <div class="col text-black fs-100 bold-700 fs-poppins item-price">&dollar; @product.Price <span class="close">&#10005;</span></div>
+                            </div>
+                        }
+                    </div>
+                    <div style="display: flex; align-items: center;" class="back-to-shop"><a asp-controller="Ecommerce" asp-action="Shop" style=" font-size: 20px;" class="no-style text-black  bold-500 fs-poppins">&leftarrow;</a><span style="padding-left: 10px;" class="text-muted text-black fs-100 bold-500 fs-poppins">Back to shop</span></div>
+                </div>
+                <div class="right-side">
+                    <div class="form-container">
+                        <div class="titles">
+                            <span style="font-size: 25px;padding: 0 0 10px 0;" class="text-black fs-100 bold-800 fs-poppins">Summary</span>
+                            <hr>
+                        </div>
+                        <div class="row">
+                            <div class="col summary-items text-black fs-100 bold-500 fs-poppins" style="padding-left:0;">ITEMS: @Model.Products.Count</div>
+                            <div class="col text-right summary-total text-black fs-100 bold-500 fs-poppins">
+                                &dollar; @(Model.Products?.Sum(e => (Convert.ToDecimal(e.Price) * e.Quantity))??0)
+                            </div>
+                        </div>
+                        <form asp-action="ProcessCheckout" asp-controller="Checkout" method="post">
+                            <p class="text-black fs-100 bold-500 fs-poppins">Shipping</p>
+                            <select name="fees" class=" text-black fs-100 bold-500 fs-poppins">
+                                <option value="5" class="text-muted text-black fs-100 bold-500 fs-poppins">Standard-Delivery- &dollar;5.00</option>
+                                <option value="10" class="text-muted text-black fs-100 bold-500 fs-poppins">Premium-Delivery- &dollar;10.00</option>
+                            </select>
+                            <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); align-self:center; padding: 2vh 0; margin-top:50px">
+                                <div class="col text-black fs-100 bold-500 fs-poppins">TOTAL PRICE</div>
+                                <div class="col text-black fs-100 bold-500 fs-poppins text-right summary-total-with-fees">&dollar; @(Model.Products?.Sum(e => (Convert.ToDecimal(e.Price) * e.Quantity)+5) ?? 0)</div>
+                            </div>
+                            <button type="submit" class="btn text-black fs-100 bold-500 fs-poppins" style="align-self:center">CHECKOUT</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

@@ -1,0 +1,72 @@
+﻿@model E_Commerce_Platform.EF.Models.Review
+@{
+    var FullName = User.Identity.Name;
+    var Email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+}
+<div class="add-review">
+    <div class="titles">
+        <div style="font-size: 20px;" class="title-2 big-wireless block lineheight fs-100 bold-700 fs-poppins">Add a Review</div>
+        <div style="color: gray; " class="title-3 fs-100 bold-500 fs-poppins">Your email will not be published</div>
+        <div style="font-size: 20px;" class="title-2 big-wireless block lineheight fs-100 bold-700 fs-poppins">
+            Your Rating:
+            <i class="add-rating fa-regular fa-star" style="color: hsl(var(--clr-red));"></i>
+            <i class="add-rating fa-regular fa-star" style="color: hsl(var(--clr-red));"></i>
+            <i class="add-rating fa-regular fa-star" style="color: hsl(var(--clr-red));"></i>
+            <i class="add-rating fa-regular fa-star" style="color: hsl(var(--clr-red));"></i>
+            <i class="add-rating fa-regular fa-star" style="color: hsl(var(--clr-red));"></i>
+        </div>
+</div>
+<form class="review-form" asp-action="CreateReview" asp-controller="Review" method="post">
+    <div class="email-name-container">
+        <div>
+            <label class="text-black fs-100 bold-500 fs-poppins">Name</label>
+            <input class="fs-100 bold-500 fs-poppins" type="text" placeholder="Name" value="@FullName" readonly>
+        </div>
+        <div>
+            <label class="text-black fs-100 bold-500 fs-poppins">Email</label>
+            <input  class="fs-100 bold-500 fs-poppins" type="email" value="@Email" placeholder="E-mail" readonly>
+        </div>
+    </div>
+
+    <input type="hidden" value="@Model.UserId" asp-for="UserId">
+    <input type="hidden" value="@Model.ProductId" asp-for="ProductId">
+
+
+    <div class="rating">
+        <input id="ratingInput" asp-for="Rating" class="fs-100 bold-500 fs-poppins" hidden>
+    </div>
+
+    <div class="likes">
+        <input asp-for="Likes" class="fs-100 bold-500 fs-poppins" hidden>
+    </div>
+
+    <div class="textarea">
+        <label asp-for="ReviewText" class="text-black fs-100 bold-500 fs-poppins">Your Review</label>
+            <textarea asp-for="ReviewText" rows="12" class="text-black fs-100 bold-500 fs-poppins" placeholder="Enter Your Review"></textarea>
+    </div>
+
+    <button type="submit" class="normal-btn bg-red text-white fs-poppins fs-50" data-aos="fade-up">Submit!</button>
+</form>
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".add-rating").forEach((star, index, stars) => {
+                star.addEventListener("click", function () {
+                    let selectedRating = index + 1; 
+
+                    let reviewForm = document.querySelector(".review-form");
+                    let ratingInput = reviewForm?.querySelector("#ratingInput");
+
+                    if (ratingInput) {
+                        ratingInput.value = selectedRating;
+                    }
+                    stars.forEach((s, i) => {
+                        s.classList.toggle("fa-solid", i < selectedRating);
+                        s.classList.toggle("fa-regular", i >= selectedRating);
+                    });
+
+                    console.log("Selected rating:", ratingInput.value);
+                });
+            });
+        });
+
+</script>
