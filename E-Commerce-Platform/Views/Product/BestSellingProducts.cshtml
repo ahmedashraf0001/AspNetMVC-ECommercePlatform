@@ -1,0 +1,22 @@
+﻿@model List<Product>
+
+
+@foreach(var item in Model){
+    <div class="product-card">
+
+            <div class="prodimg" data-aos="fade-up">
+                <img src="@item.ImageUrl" alt="">
+            </div>
+        <span style="font-size:23px;" class="text-black bigtext fs-poppins bold-700 fs-100">
+            @item.Name
+            <div style="color:gray;" id="desc-text" class="title-3  fs-50 bold-500 fs-poppins">@item.Description</div>
+        </span>
+        <span id="prodprice" style="font-size:22px" class="prodprice text-black big-wireless block lineheight bold-700 fs-poppins">$@item.Price.ToString("N0")</span>
+        
+            <a class="no-style" asp-controller="product" asp-action="ProductPage" asp-route-productId="@item.Id">
+                <button class="normal-btn bg-red text-white fs-poppins fs-50 ">
+                    Details
+                </button>
+            </a>
+    </div>
+}

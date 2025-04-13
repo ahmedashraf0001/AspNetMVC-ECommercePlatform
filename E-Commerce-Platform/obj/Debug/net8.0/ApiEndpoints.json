@@ -1,0 +1,12 @@
+[
+  {
+    "ContainingType": "E_Commerce_Platform.Controllers.PaymentController",
+    "Method": "Index",
+    "RelativePath": "api/Payment",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]

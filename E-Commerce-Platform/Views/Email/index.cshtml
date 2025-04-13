@@ -1,0 +1,122 @@
+﻿@using E_Commerce_Platform.ViewModels
+@model EmailViewModel
+
+<style>
+    .validation-summary {
+    width: 100%;
+    color: red;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    }
+
+    .validation-summary ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    }
+
+    .validation-summary li::before {
+    content: "⚠ ";
+    font-weight: bold;
+    }
+
+    .seen {
+    background-color: gray !important; /* Light gray for seen emails */
+    font-weight: bold; /* Optional: Make text bold */
+    }
+
+    .unseen {
+    background-color: white !important; /* White for unseen emails */
+    font-weight: normal; /* Regular font weight for unseen */
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h4 class="mb-0">Emails</h4>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center gap-3" style="width:100%;">
+            <form method="get" asp-action="Index" class="d-flex align-items-center gap-2">
+                <label for="sortOption" class="form-label me-2 fw-bold fs-5">Sort:</label>
+                <select name="sortBy" id="sortOption" class="form-select" onchange="this.form.submit()">
+                    <option value="">Select</option>
+                    <option value="Subject" selected="@(Model.SortBy == "Subject" ? "selected" : null)">Subject</option>
+                    <option value="Sender" selected="@(Model.SortBy == "Sender" ? "selected" : null)">Sender</option>
+                    <option value="Date" selected="@(Model.SortBy == "Date" ? "selected" : null)">Date</option>
+                </select>
+            </form>
+
+            <form asp-action="Index" method="GET" class="d-flex align-items-center gap-2">
+                <label for="Search" class="form-label me-2 fw-bold fs-5">Search:</label>
+                <input type="text" name="search" value="@Model.SearchQuery" placeholder="Search" class="form-control">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-sync-alt"></i>
+                </a>
+            </form>
+        </div>
+
+        <div asp-validation-summary="All" class="validation-summary"></div>
+        <table class="table">
+            <thead class="table-dark">
+                <tr>
+                    <th>Sender</th>
+                    <th>Seen</th>
+                    <th>Subject</th>
+                    <th>Received Date</th>
+                    <th>Review</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Emails.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <span>No Emails Found</span>
+                        </td>
+                    </tr>
+                }
+
+                @foreach (var email in Model.Emails)
+                {
+                    <tr>
+                        <td style="background-color: @(email.Seen == "Read" ? "#f0f0f0" : "#ffffff");">@email.Sender</td>
+                        <td style="background-color: @(email.Seen == "Read" ? "#f0f0f0" : "#ffffff");">@email.Seen</td> 
+                        <td style="background-color: @(email.Seen == "Read" ? "#f0f0f0" : "#ffffff");">
+                            <a href="@Url.Action("Details", "Email", new { emailId = email.Id })">@email.Subject</a>
+                        </td>
+                        <td style="background-color: @(email.Seen == "Read" ? "#f0f0f0" : "#ffffff");">@email.DateReceived.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td style="background-color: @(email.Seen == "Read" ? "#f0f0f0" : "#ffffff");">@(email.BodyPreview.Length > 50 ? email.BodyPreview.Substring(0, 50) + "..." : email.BodyPreview)</td>
+                        <td style="background-color: @(email.Seen == "Read" ? "#f0f0f0" : "#ffffff");">
+                            <a asp-action="Details" asp-route-emailId="@email.Id" class="btn btn-info btn-sm">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+
+        <div class="d-flex justify-content-between align-items-center w-100 gap-3">
+            <span class="fs-6 text-secondary">Total Emails: @Model.TotalEmails</span>
+
+            <div class="pagination" style="display:flex; justify-content:center; align-items:center; gap:10px">
+                <span class="mx-2">Page @Model.CurrentPage of @Model.TotalPages</span>
+
+                @if (Model.CurrentPage > 1)
+                {
+                    <a asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-pageSize="12" asp-route-search="@Model.SearchQuery" asp-route-sortBy="@Model.SortBy" class="btn btn-secondary">Previous</a>
+                }
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <a asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-pageSize="12" asp-route-search="@Model.SearchQuery" asp-route-sortBy="@Model.SortBy" class="btn btn-secondary">Next</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

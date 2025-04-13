@@ -1,0 +1,63 @@
+﻿@model E_Commerce_Platform.ViewModels.ExternalRegisterViewModel
+
+@{
+    Layout = "~/Views/Shared/_websiteLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/login.css" />
+
+<div class="login-container" data-aos="fade-up">
+    <div class="login" >
+        <div class="left-side" data-aos="fade-up">
+            <img src="~/images/p11.png" alt="">
+        </div>
+        <div class="right-side" style="
+    display: flex;
+    flex-direction: column;
+    padding: 70px;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+">
+            <div class="header">
+                <div class="logo-title">
+                    <div class="titles">
+                        <div class="title-2 big-wireless block fs-400 bold-700 fs-poppins">Finish Setting Up Your Account</div>
+                    </div>
+                </div>
+                <form asp-action="ExternalRegister" method="post" data-aos="fade-up">
+                    <div asp-validation-summary="ModelOnly" class="fs-100 bold-500 fs-poppins" style="color: red;"></div>
+
+                    <input asp-for="FullName" class="form-control" hidden />
+
+                    <div class="form-group">
+                        <input asp-for="Address" style="width:100%" class="fs-100 bold-500 fs-poppins" placeholder="Address" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <input asp-for="Email" class="form-control" hidden />
+
+                    <div class="form-group">
+                        <input asp-for="PhoneNumber" style="width:100%" class="fs-100 bold-500 fs-poppins" placeholder="Phone number" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <input asp-for="ReturnUrl" value="/Ecommerce/Home" class="form-control" hidden />
+
+                    <button type="submit" class="large-btn bg-red text-white fs-poppins fs-50" data-aos="fade-up">Submit!</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

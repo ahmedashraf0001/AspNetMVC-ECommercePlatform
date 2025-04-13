@@ -1,0 +1,151 @@
+﻿@using E_Commerce_Platform.ViewModels
+@using Microsoft.AspNetCore.Identity
+@model OrderPageViewModel
+
+@{
+    ViewData["Title"] = "Index";
+
+}
+<style>
+    .validation-summary {
+    width: 100%;
+    color: red;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    }
+
+    .validation-summary ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    }
+
+    .validation-summary li::before {
+    content: "⚠ "; 
+    font-weight: bold;
+    }
+</style>
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h4 class="mb-0">Orders</h4>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center gap-3" style="width:100%;">
+            <form method="get" asp-action="Sort" class="d-flex align-items-center gap-2">
+                <label for="sortOption" class="form-label me-2 fw-bold fs-5">Sort:</label>
+                <select name="sortOption" id="sortOption" class="form-select" onchange="this.form.submit()">
+                    <option value="Select">Select</option>
+                    <option value="Id" selected="@(ViewBag.SortOption == "Id" ? "selected" : null)">ID</option>
+                    <option value="FullName" selected="@(ViewBag.SortOption == "FullName" ? "selected" : null)">Name</option>
+                    <option value="TotalCost" selected="@(ViewBag.SortOption == "TotalCost" ? "selected" : null)">Total Cost</option>
+                    <option value="OrderDate" selected="@(ViewBag.SortOption == "OrderDate" ? "selected" : null)">Date</option>
+                    <option value="Status" selected="@(ViewBag.SortOption == "Status" ? "selected" : null)">Status</option>
+                </select>
+            </form>
+
+            <form asp-action="Search" method="GET">
+                <label for="Search" class="form-label me-2 fw-bold fs-5">Search:</label>
+                <input type="text" name="keyword" placeholder="Search">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div asp-validation-summary="All" class="validation-summary"></div>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Total Cost</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Product Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Orders.Count == 0)
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            <span>No Orders Found</span>
+                        </td>
+                    </tr>
+                }
+                @foreach (var order in Model.Orders)
+                {
+                    if (order.Id == ViewBag.orderId) 
+                    {
+                        <form method="post" asp-action="ChangeStatus" asp-route-orderId="@order.Id">
+                        <tr>
+                            <td>@order?.Id</td>
+                            <td>@order?.User?.FullName</td>
+                            <td>$@order?.TotalCost</td>
+                            <td>@order?.OrderDate</td>
+                            <td>
+                                <select name="Status" class="form-select" style="font-size: 15px;">
+                                        @foreach (var status in Enum.GetValues(typeof(OrderStatus)))
+                                        {
+                                        <option value="@status" selected="@(order.Status == (OrderStatus)status ? "selected" : null)">
+                                                @status
+                                        </option>
+                                        }
+                                </select>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2" style=" font-size:10px">
+                                    <input type="submit" value="Save" class="btn btn-primary" />
+                                    <a asp-action="index" class="btn btn-danger" style="font-size:15px">Exit</a>
+                                </div>
+                            </td>
+                        </tr>
+                        </form>
+                    }
+                    else{
+                        <tr>
+                            <td>@order?.Id</td>
+                            <td>@order?.User?.FullName</td>
+                            <td>$@order?.TotalCost</td>
+                            <td>@order?.OrderDate</td>
+                            <td>
+                                <span class="badge @(order.Status switch
+                                                {
+                                                    OrderStatus.Delivered => "bg-success",
+                                                    OrderStatus.Cancelled => "bg-danger",
+                                                    OrderStatus.Pending => "bg-warning",
+                                                    OrderStatus.Shipped => "bg-primary",
+                                                    _ => "bg-secondary"
+                                                })"
+                                      style="font-size:15px">
+                                    @order.Status
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2" style=" font-size:10px">
+                                    <a asp-action="ChangeStatus" asp-route-orderId="@order.Id" class="btn btn-primary" style="font-size:15px">Status</a>
+                                    <a asp-action="Details" asp-route-orderId="@order.Id" class="btn btn-success" style="font-size:15px">Details</a>
+                                    <button class="btn btn-danger" onclick="showWarning('@order.Id')">Remove</button>
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center w-100 gap-3">
+            <span class="fs-6 text-secondary">Roles found: @Model.Orders.Count</span>
+            <div class="d-flex gap-2">
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function showWarning(id) {
+        let isConfirmed = confirm(`Are you sure you want to delete order ${id}?`);
+        if (isConfirmed) {
+            window.location.href = `/Order/Delete?orderId=${id}`;
+        }
+    }
+</script>

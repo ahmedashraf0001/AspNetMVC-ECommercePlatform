@@ -1,0 +1,109 @@
+﻿@using E_Commerce_Platform.ViewModels
+@model ShopViewModel
+
+@{
+    ViewData["Title"] = "Admin Transactions";
+
+}
+<style>
+    .validation-summary {
+        width: 100%;
+        color: red;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+    .validation-summary ul {
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+    }
+    .validation-summary li::before {
+        content: "⚠ "; 
+        font-weight: bold;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h4 class="mb-0">Products</h4>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center gap-3" style="width:100%;">
+            <form method="get" asp-action="Index" class="d-flex align-items-center gap-2">
+                <label for="sortOption" class="form-label me-2 fw-bold fs-5">Sort:</label>
+                <select name="sortBy" id="sortOption" class="form-select" onchange="this.form.submit()">
+                    <option value="">Select</option>
+                    <option value="Name" selected="@(Model.SortBy == "Name" ? "selected" : null)">Name</option>
+                    <option value="Price" selected="@(Model.SortBy == "Price" ? "selected" : null)">Price</option>
+                    <option value="Stock" selected="@(Model.SortBy == "Stock" ? "selected" : null)">Stock</option>
+                    <option value="Category" selected="@(Model.SortBy == "Category" ? "selected" : null)">Category</option>
+                </select>
+            </form>
+
+            <form asp-action="Index" method="GET" class="d-flex align-items-center gap-2">
+                <label for="Search" class="form-label me-2 fw-bold fs-5">Search:</label>
+                <input type="text" name="search" value="@Model.SearchQuery" placeholder="Search" class="form-control">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div asp-validation-summary="All" class="validation-summary"></div>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Stock</th>
+                    <th>Price</th>
+                    <th>Deleted</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Products.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <span>No Products Found</span>
+                        </td>
+                    </tr>
+                }
+                @foreach (var product in Model.Products)
+                {
+                    <tr>
+                        <td><img src="@product.ImageUrl" class="rounded shadow-sm" style="width:90px; height:90px; object-fit:cover;"></td>
+                        <td>@product.Name</td>
+                        <td>@product.Stock</td>
+                        <td>$@product.Price.ToString("N0")</td>
+                        <td>
+                            <div class="col border-bottom pb-2 d-flex align-items-center">
+                                <span class="badge ms-2 @(product.IsDeleted ? "bg-danger" : "bg-success") fs-6">
+                                    @(product.IsDeleted ? "Yes" : "No")
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-productId="@product.Id" class="btn btn-info btn-sm">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center w-100 gap-3">
+            <span class="fs-6 text-secondary">Products found: @Model.TotalProducts</span>
+
+            <div class="pagination" style="display:flex; justify-content:center; align-items:center; gap:10px">
+                <span class="mx-2">Page @Model.CurrentPage of @Model.TotalPages</span>
+
+                @if (Model.CurrentPage > 1)
+                {
+                    <a asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-pageSize="12" asp-route-search="@Model.SearchQuery" asp-route-sortBy="@Model.SortBy" class="btn btn-secondary">Previous</a>
+                }
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <a asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-pageSize="12" asp-route-search="@Model.SearchQuery" asp-route-sortBy="@Model.SortBy" class="btn btn-secondary">Next</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

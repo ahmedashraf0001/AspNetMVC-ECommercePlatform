@@ -1,0 +1,370 @@
+﻿@using E_Commerce_Platform.ViewModels
+@model UserRoleViewModel
+
+@{
+    ViewData["Title"] = "User Details";
+    @if(!User.IsInRole("Admin")){
+        Layout = "~/Views/Shared/_websiteLayout.cshtml";
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    }
+}
+<style>
+    ul {
+    margin-top: 16px;
+    margin-bottom: 1rem;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+@if (!User.IsInRole("Admin"))
+{
+    <div class="main-container" style="overflow: scroll; height:fit-content; gap:0">
+        <div class="card shadow-lg" style="width:70%; height:100%; align-self:center;">
+            <div class="card-header bg-dark text-white" style="display:flex; justify-content:space-between; align-items:center;">
+                <h4 class="mb-0">User Information</h4>
+                <div class="d-flex gap-2">
+                    <a asp-action="Edit" asp-route-userId="@Model.User.Id"
+                    class="btn btn-primary btn-sm d-flex align-items-center justify-content-center rounded-circle"
+                    style="width: 40px; height: 40px;" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    @if(User.IsInRole("Admin")){
+                        <a asp-action="ToggleDisable" asp-route-userId="@Model.User.Id"
+                        class="btn @(Model.User.IsDeleted ? "btn-success" : "btn-danger") btn-sm d-flex align-items-center justify-content-center rounded-circle"
+                        style="width: 40px; height: 40px;" title="@(Model.User.IsDeleted ? "Unlock" : "Lock")">
+                            <i class="fas @(Model.User.IsDeleted ? "fa-unlock" : "fa-lock")"></i>
+                        </a>
+                    }
+                    <button class="btn btn-danger btn-sm d-flex align-items-center justify-content-center rounded-circle"
+                    style="width: 40px; height: 40px;" title="Delete"
+                    onclick="showWarning('@Model.User.FullName', '@Model.User.Id')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div asp-validation-summary="All" class="validation-summary"></div>
+                <div class="text-center" style=" width:fit-content; margin-bottom:20px;">
+                    <img src="@Model.User.ImageUrl" class="rounded-circle shadow-sm border" style="width: 150px; height: 150px; object-fit: cover;" />
+                </div>
+                <div class="row row-cols-2 g-3" style="justify-content:start; gap:0;">
+                    <div class="col border-bottom pb-2">
+                        <strong class="text-muted">User ID:</strong> <span class="fw-bold ms-2">@Model.User.Id</span>
+                    </div>
+                    <div class="col border-bottom pb-2">
+                        <strong class="text-muted">Username:</strong> <span class="fw-bold ms-2">@Model.User.UserName</span>
+                    </div>
+                    <div class="col border-bottom pb-2">
+                        <strong class="text-muted">Full Name:</strong> <span class="fw-bold ms-2">@Model.User.FullName</span>
+                    </div>
+                    <div class="col border-bottom pb-2">
+                        <strong class="text-muted">Email:</strong> <span class="fw-bold ms-2">@Model.User.Email</span>
+                    </div>
+                    <div class="col border-bottom pb-2">
+                        <strong class="text-muted">Address:</strong> <span class="fw-bold ms-2">@Model.User.Address</span>
+                    </div>
+                    <div class="col border-bottom pb-2">
+                        <strong class="text-muted">Phone:</strong> <span class="fw-bold ms-2">@Model.User.PhoneNumber</span>
+                    </div>
+                    <div class="col border-bottom pb-2">
+                        <strong class="text-muted">Registered:</strong> <span class="fw-bold ms-2">@Model.User.DateCreated</span>
+                    </div>
+                    <div class="col border-bottom pb-2 d-flex align-items-center">
+                        <strong class="text-muted">Disabled:</strong>
+                        <span class="badge ms-3 @(Model.User.IsDeleted ? "bg-danger" : "bg-success") fs-6">
+                            @(Model.User.IsDeleted ? "Yes" : "No")
+                        </span>
+                    </div>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="col border-bottom pb-2">
+                            <strong class="text-muted">Roles:</strong>
+                            <span class="fw-bold ms-2">
+                                @if (Model.UserRoles == null || Model.UserRoles.Count == 0)
+                                {
+                                    <span class="badge bg-secondary">No Roles</span>
+                                }
+                                else
+                                {
+                                    @foreach (var role in Model.UserRoles)
+                                    {
+                                        <span class="badge bg-primary">@role</span>
+                                    }
+                                }
+                            </span>
+                        </div>
+                    }
+
+                    @if(!Model.User.IsExternalLogin)
+                    {
+                        <div class="col border-bottom pb-2">
+                            <a href="@Url.Action("ResetPassword", "Account", new { userId = Model.User.Id })" class="fw-bold ms-2">
+                                Change Password
+                            </a>
+                        </div>
+                    }
+                </div>
+                @if (User.IsInRole("Admin"))
+                {
+                <div class="d-flex gap-2" style="margin-top:20px">
+                  
+                        @if (ViewBag.context == "Role")
+                        {
+                            <a asp-controller="Role" asp-action="Details" asp-route-roleId="@ViewBag.roleId" class="btn btn-secondary">Back to Role</a>
+                        }
+                        else if (ViewBag.context == "Layout")
+                        {
+                            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Back to Main</a>
+                        }
+                        else
+                        {
+                            <a asp-controller="User" asp-action="Index" class="btn btn-secondary">Back to List</a>
+                        }
+                    
+                </div>
+                }
+            </div>
+        </div>
+
+        @if (Model.User.Orders?.Any() == true)
+        {
+            <div class="card shadow-lg border-0 mt-4" style="width:70%; height:100%; align-self:center;">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0">Orders</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-hover shadow-sm rounded text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Total Cost</th>
+                                <th>Order Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.User.Orders)
+                            {
+                                <tr>
+                                    <td>@order.Id</td>
+                                    <td class="text-success fw-bold">$@order.TotalCost</td>
+                                    <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>
+                                        <span class="badge @(GetStatusClass(order.Status)) p-2">@order.Status</span>
+                                    </td>
+                                    <td>
+                                        @if (ViewBag.context == "Role")
+                                        {
+                                            <a asp-controller="Order" asp-action="Details" asp-route-roleId="@ViewBag.roleId" asp-route-context="Role" asp-route-orderId="@order.Id" class="btn btn-info btn-sm">View</a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Order" asp-action="Details" asp-route-context="User" asp-route-orderId="@order.Id" class="btn btn-info btn-sm">View</a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning mt-3 text-center" style="width:70%; height:100%; align-self:center;">
+                <strong>No orders found.</strong>
+            </div>
+        }
+
+    </div>
+
+}
+else{
+    <div class="card shadow-lg">
+        <div class="card-header bg-dark text-white" style="display:flex; justify-content:space-between; align-items:center;">
+            <h4 class="mb-0">User Information</h4>
+            <div class="d-flex gap-2">
+                <a asp-action="Edit" asp-route-userId="@Model.User.Id"
+                   class="btn btn-primary btn-sm d-flex align-items-center justify-content-center rounded-circle"
+                   style="width: 40px; height: 40px;" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </a>
+                @if (!(User.Identity.Name == Model.User.UserName))
+                {
+                    <a asp-action="ToggleDisable" asp-route-userId="@Model.User.Id"
+                       class="btn @(Model.User.IsDeleted ? "btn-success" : "btn-danger") btn-sm d-flex align-items-center justify-content-center rounded-circle"
+                       style="width: 40px; height: 40px;" title="@(Model.User.IsDeleted ? "Unlock" : "Lock")">
+                        <i class="fas @(Model.User.IsDeleted ? "fa-unlock" : "fa-lock")"></i>
+                    </a>
+                    <button class="btn btn-warning btn-sm d-flex align-items-center justify-content-center rounded-circle"
+                            style="width: 40px; height: 40px;" title="Delete"
+                            onclick="showWarning('@Model.User.FullName', '@Model.User.Id')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                }
+            </div>
+        </div>
+        <div class="card-body">
+            <div asp-validation-summary="All" class="validation-summary"></div>
+            <div class="text-center" style=" width:fit-content">
+                <img src="@Model.User.ImageUrl" class="rounded-circle shadow-sm border" style="width: 150px; height: 150px; object-fit: cover;" />
+            </div>
+            <div class="row row-cols-2 g-3">
+                <div class="col border-bottom pb-2">
+                    <strong class="text-muted">User ID:</strong> <span class="fw-bold ms-2">@Model.User.Id</span>
+                </div>
+                <div class="col border-bottom pb-2">
+                    <strong class="text-muted">Username:</strong> <span class="fw-bold ms-2">@Model.User.UserName</span>
+                </div>
+                <div class="col border-bottom pb-2">
+                    <strong class="text-muted">Full Name:</strong> <span class="fw-bold ms-2">@Model.User.FullName</span>
+                </div>
+                <div class="col border-bottom pb-2">
+                    <strong class="text-muted">Email:</strong> <span class="fw-bold ms-2">@Model.User.Email</span>
+                </div>
+                <div class="col border-bottom pb-2">
+                    <strong class="text-muted">Address:</strong> <span class="fw-bold ms-2">@Model.User.Address</span>
+                </div>
+                <div class="col border-bottom pb-2">
+                    <strong class="text-muted">Phone:</strong> <span class="fw-bold ms-2">@Model.User.PhoneNumber</span>
+                </div>
+                <div class="col border-bottom pb-2">
+                    <strong class="text-muted">Registered:</strong> <span class="fw-bold ms-2">@Model.User.DateCreated</span>
+                </div>
+                @if (User.IsInRole("Admin"))
+                {
+                    <div class="col border-bottom pb-2 d-flex align-items-center">
+                        <strong class="text-muted">Disabled:</strong>
+                        <span class="badge ms-3 @(Model.User.IsDeleted ? "bg-danger" : "bg-success") fs-6">
+                            @(Model.User.IsDeleted ? "Yes" : "No")
+                        </span>
+                    </div>
+                    <div class="col border-bottom pb-2">
+                        <strong class="text-muted">Roles:</strong>
+                        <span class="fw-bold ms-2">
+                            @if (Model.UserRoles == null || Model.UserRoles.Count == 0)
+                            {
+                                <span class="badge bg-secondary">No Roles</span>
+                            }
+                            else
+                            {
+                                @foreach (var role in Model.UserRoles)
+                                {
+                                    <span class="badge bg-primary">@role</span>
+                                }
+                            }
+                        </span>
+                    </div>
+                }
+                <div class="col border-bottom pb-2">
+                    <a href="@Url.Action("ResetPassword", "Account", new { userId = Model.User.Id })" class="fw-bold ms-2">
+                        Change Password
+                    </a>
+                </div>
+            </div>
+            <div class="d-flex gap-2" style="margin-top:20px">
+                @if (User.IsInRole("Admin"))
+                {
+                    if (ViewBag.context == "Role")
+                    {
+                        <a asp-controller="Role" asp-action="Details" asp-route-roleId="@ViewBag.roleId" class="btn btn-secondary">Back to Role</a>
+                    }
+                    else if (ViewBag.context == "Layout")
+                    {
+                        <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-secondary">Back to Main</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="User" asp-action="Index" class="btn btn-secondary">Back to List</a>
+                    }
+                }
+            </div>
+
+        </div>
+    </div>
+
+    @if (Model.User.Orders?.Any() == true)
+    {
+        <div class="card shadow-lg border-0 mt-4">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">Orders</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped table-hover shadow-sm rounded text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Total Cost</th>
+                            <th>Order Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.User.Orders)
+                        {
+                            <tr>
+                                <td>@order.Id</td>
+                                <td class="text-success fw-bold">$@order.TotalCost</td>
+                                <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    <span class="badge @(GetStatusClass(order.Status)) p-2">@order.Status</span>
+                                </td>
+                                <td>
+                                    @if (ViewBag.context == "Role")
+                                    {
+                                        <a asp-controller="Order" asp-action="Details" asp-route-roleId="@ViewBag.roleId" asp-route-context="Role" asp-route-orderId="@order.Id" class="btn btn-info btn-sm">View</a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="Order" asp-action="Details" asp-route-context="User" asp-route-orderId="@order.Id" class="btn btn-info btn-sm">View</a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning mt-3 text-center">
+            <strong>No orders found.</strong>
+        </div>
+    }
+
+}
+<script>
+    function showWarning(entry, id) {
+        if (confirm(`Are you sure you want to delete ${entry}?`)) {
+            fetch(`/User/DeleteUser`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `userId=${id}`
+            }).then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url; 
+                } else {
+                    alert(`Failed to delete ${entry}.`);
+                }
+            }).catch(error => console.error("Error:", error));
+        }
+    }
+</script>
+
+@functions {
+    string GetStatusClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            OrderStatus.Pending => "bg-warning",
+            OrderStatus.Shipped => "bg-primary",
+            _ => "bg-secondary"
+        };
+    }
+}
