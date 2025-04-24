@@ -1,6 +1,6 @@
 # 🛒 Full-Stack E-Commerce Platform (ASP.NET MVC)
 
-A modern, feature-rich E-Commerce web application built using **ASP.NET MVC**, **Entity Framework**, and a **Layered Architecture**. It provides a clean, animated UI for customers to browse and shop, and a powerful admin panel for managing the entire system.
+A modern, feature-rich E-Commerce web application built using **ASP.NET MVC**, **Entity Framework**, and a **N-tier architecture**. It provides a clean, animated UI for customers to browse and shop, and a powerful admin panel for managing the entire system.
 
 ---
 ![Home](./assets/home.png)
